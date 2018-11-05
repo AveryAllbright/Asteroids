@@ -1,3 +1,5 @@
+class Asteroid {
+
     let vPos;
     let vVel;
 
@@ -7,11 +9,13 @@
     let lChunks = [];
     let bSplit = false;
 
-    let canvas = document.getElementById("main");
-    let ctx = canvas.getContext('2d');
+    const canvas = document.getElementById("mainCanvas");
+    const ctx = canvas.getContext('2d', {
+        alpha: false
+    });
 
 
-    function Asteroid(posX, posY, velX, velY, size) {
+    function constructor(posX, posY, velX, velY, size) {
         vPos = new Vec2(posX, posY);
         nSize = size;
         vVel = new Vec2(velX, velY);
@@ -60,22 +64,20 @@
     }
 
     function loop() {
-        
+
         //TODO : Looping
-        
+
     }
-    
-    function Hit(bullet)
-    {
+
+    function Hit(bullet) {
         //TODO : Hit detection
     }
-    
-    function onHit(player)
-    {
+
+    function onHit(player) {
         //Todo : Hit detection
     }
-    
-    function isHit()
-    {
+
+    function isHit() {
         //TODO : Asteroid Splitting
     }
+}
