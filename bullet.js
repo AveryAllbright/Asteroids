@@ -20,7 +20,7 @@ class Bullet {
             bOff = true;
         } else {
             vPos.translate(vVel);
-            //TODO : Looping
+            if(outOfBounds(vPos)){loop();}
         }
     }
 
@@ -32,7 +32,22 @@ class Bullet {
     }
 
     function loop() {
-        //TODO : Looping
+       
+        if (vPos.y < -50) {
+            vPos.y = height + 50;
+        } else {
+            if (vPos.y > height + 50) {
+                vPos.y = -50;
+            }
+        }
+        if(vPos.x < -50)
+            {
+                vPos.x = width + 50;
+            }
+        else if(vPos.x > width + 50)
+            {
+                vPos.x = -50;
+            }
     }
 
 }

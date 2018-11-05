@@ -59,25 +59,59 @@ class Asteroid {
             });
         } else {
             vPos.translate(vVel);
-            //TODO : Check for Looping
+            if (outOfBounds(vPos)) {
+                loop();
+            }
         }
     }
 
     function loop() {
 
-        //TODO : Looping
+        if (vPos.y < -50) {
+            vPos.y = height + 50;
+        } else {
+            if (vPos.y > height + 50) {
+                vPos.y = -50;
+            }
+        }
+        if(vPos.x < -50)
+            {
+                vPos.x = width + 50;
+            }
+        else if(vPos.x > width + 50)
+            {
+                vPos.x = -50;
+            }
 
     }
 
     function Hit(bullet) {
-        //TODO : Hit detection
+        if(vPos.dist(bullet.vPos) < fRadius)
+            {
+                isHit();
+                return true;
+            }
+        return false;
     }
 
     function onHit(player) {
-        //Todo : Hit detection
+       if(vPos.dist(player.vPos) < fRadius + 15)
+            {
+                isHit();
+                return true;
+            }
+        return false;
     }
 
     function isHit() {
-        //TODO : Asteroid Splitting
+        bSplit = true;
+        
+        if(nSize == 1){return;}
+        
+        vVel = new Vec2(vVel.x, vVel.y);
+        vVel.rotate(-.3);
+        lChunks.add(new Asteroid(vPos.x, vPos.y, vVel.x, vVel.y, nSize -1));
+        vVel.rotate(.5);
+        lChunks.add(new Asteroid(vPos.x, vPos.y, vVel.x, vVel.y, nSize-1));
     }
 }
