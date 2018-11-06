@@ -1,71 +1,73 @@
 class Asteroid {
 
-    let vPos;
-    let vVel;
-
-    let nSize = 3;
-    let fRadius;
-
-    let lChunks = [];
-    let bSplit = false;
-
-    const canvas = document.getElementById("mainCanvas");
-    const ctx = canvas.getContext('2d', {
-        alpha: false
-    });
+    constructor(posX, posY, velX, velY, size) {
 
 
-    function constructor(posX, posY, velX, velY, size) {
-        vPos = new Vec2(posX, posY);
-        nSize = size;
-        vVel = new Vec2(velX, velY);
+        this.vPos;
+        this.vVel;
 
-        switch (nSize) {
+        this.nSize;
+        this.fRadius;
+
+        this.lChunks = [];
+        this.bSplit = false;
+
+        this.canvas = document.getElementById("mainCanvas");
+        this.ctx = canvas.getContext('2d', {
+            alpha: false
+        });
+
+
+        this.vPos = Vec2(posX, posY);
+        this.nSize = size;
+        this.vVel = Vec2(velX, velY);
+
+        switch (this.nSize) {
             case 1:
-                fRadius = 10;
-                vVel.normalize();
-                vVel.mul(1.25);
+                this.fRadius = 10;
+                this.vVel.normalise();
+                this.vVel.mul(1.25);
                 break;
             case 2:
-                fRadius = 20;
-                vVel.normalize();
-                vVel.mul(1.0);
+                this.fRadius = 20;
+                this.vVel.normalise();
+                this.vVel.mul(1.0);
                 break;
             case 3:
-                fRadius = 40;
-                vVel.normalize();
-                vVel.mul(.75);
+                this.fRadius = 40;
+                this.vVel.normalise();
+                this.vVel.mul(.75);
                 break;
             default:
                 break;
         }
     }
 
-    function draw() {
-        if (bSplit) {
-            lChunks.forEach(Element => {
+    draw() {
+        if (this.bSplit) {
+            this.lChunks.forEach(Element => {
                 draw();
             });
         } else {
             ctx.strokeStyle = "white";
-            ctx.strokeRect(vPos.x, vPos.y, fRadius, fRadius);
+            ctx.strokeRect(this.vPos.x, this.vPos.y, this.fRadius, this.fRadius);
         }
     }
 
-    function move() {
-        if (bSplit) {
-            lChunks.forEach(Element => {
-                move();
+    move() {
+        if (this.bSplit) {
+            this.lChunks.forEach(Element => {
+                this.move();
             });
         } else {
-            vPos.translate(vVel);
-            if (outOfBounds(vPos)) {
-                loop();
+            this.vPos.translate(this.vVel);
+            if (outOfBounds(this.vPos)) {
+                this.loop();
             }
         }
     }
 
-    function loop() {
+    loop() {
 
         if (vPos.y < -50) {
             vPos.y = height + 50;
@@ -74,44 +76,49 @@ class Asteroid {
                 vPos.y = -50;
             }
         }
-        if(vPos.x < -50)
-            {
-                vPos.x = width + 50;
-            }
-        else if(vPos.x > width + 50)
-            {
-                vPos.x = -50;
-            }
+        if (vPos.x < -50) {
+            vPos.x = width + 50;
+        } else if (vPos.x > width + 50) {
+            vPos.x = -50;
+        }
 
     }
 
-    function Hit(bullet) {
-        if(vPos.dist(bullet.vPos) < fRadius)
-            {
-                isHit();
-                return true;
-            }
+    Hit(bullet) {
+        if (vPos.dist(bullet.vPos) < fRadius) {
+            isHit();
+            return true;
+        }
+        return false;
+    }
+    
+    lookForHit(pos)
+    {
+          if (vPos.dist(bullet.vPos) < fRadius) {
+            return true;
+        }
         return false;
     }
 
-    function onHit(player) {
-       if(vPos.dist(player.vPos) < fRadius + 15)
-            {
-                isHit();
-                return true;
-            }
+    onHit(player) {
+        if (this.vPos.dist(player) < this.fRadius + 15) {
+            isHit();
+            return true;
+        }
         return false;
     }
 
-    function isHit() {
+    isHit() {
         bSplit = true;
-        
-        if(nSize == 1){return;}
-        
+
+        if (nSize == 1) {
+            return;
+        }
+
         vVel = new Vec2(vVel.x, vVel.y);
         vVel.rotate(-.3);
-        lChunks.add(new Asteroid(vPos.x, vPos.y, vVel.x, vVel.y, nSize -1));
+        lChunks.add(new Asteroid(vPos.x, vPos.y, vVel.x, vVel.y, nSize - 1));
         vVel.rotate(.5);
-        lChunks.add(new Asteroid(vPos.x, vPos.y, vVel.x, vVel.y, nSize-1));
+        lChunks.add(new Asteroid(vPos.x, vPos.y, vVel.x, vVel.y, nSize - 1));
     }
 }

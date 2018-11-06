@@ -1,163 +1,359 @@
 class Player {
 
-    let vPos;
-    let vVel;
-    let vAcc;
 
-    let nScore = 0;
-    let nShotDelay = 0;
-    let fRotation; //ships current angle;
-    let fSpin; // Angle++
-    const
-    let fMaxSpeed = 10;
-    let bBooster = false;
-    let lBullets = Array[];
-    let lAsteroids = Array[];
-
-    let nAsteroidTimer = 1000;
-    let nLives = 0;
-    let bDead = false;
-    let nITimer = 0;
-    let nBoostTimer = 10;
-
-
-    let brain; //Net
-    let vision = new Array[8];
-    let dection = new Array[4];
-    let bReplay = false;
-    let nlSeedUsed;
-    let lSeeds = Array[];
-    let nUpToSeedNo = 0; // Current seed position
-    let fFitness;
-
-    let nShotsFired = 4; //Encourage shooting;
-    let nShotsHit = 1; //starting at nonZero number to force improvement
-
-    let nLifeSpan = 0; //Counting timer of how long the bot lived, for fitness equation.
-
-    let bCanShoot = true; //Used with shotDelay to pace out shots
-
-
-
-    function constructor() {
+    constructor() {
         let w = document.innerWidth;
         let h = document.innerHeight;
 
-        vPos = new Vec2(w / 2, h / 2);
-        vVel = new Vec2();
-        vAcc = new Vec2();
+        this.vPos = Vec2(w / 2, h / 2);
+        this.vVel = Vec2();
+        this.vAcc = Vec2();
 
-        fRotation = 0;
-        nlSeedUsed = Math.floor(Math.random() * (100000000));
+
+        this.nScore = 0;
+        this.nShotDelay = 0;
+        this.fRotation = 0;; //ships current angle;
+        this.fSpin = 0.5; // Angle++
+        this.fMaxSpeed = 10;
+        this.bBooster = false;
+        this.lBullets = [];
+        this.lAsteroids = [];
+
+        this.nAsteroidTimer = 1000;
+        this.nLives = 0;
+        this.bDead = false;
+        this.nITimer = 0;
+        this.nBoostTimer = 10;
+
+
+        this.brain = new NeuralNet(9, 16, 4); //Net
+        this.vision = Array[8];
+        this.decision = Array[4];
+        this.bReplay = false;
+        this.nlSeedUsed;
+        this.lSeeds = [];
+        this.nUpToSeedNo = 0; // Current seed position
+        this.fFitness = 0.0;
+
+        this.nShotsFired = 4; //Encourage shooting;
+        this.nShotsHit = 1; //starting at nonZero number to force improvement
+
+        this.nLifeSpan = 0; //Counting timer of how long the bot lived, for fitness equation.
+
+        this.bCanShoot = true; //Used with shotDelay to pace out shots
+
+        this.canvas = document.getElementById("mainCanvas");
+        this.ctx = canvas.getContext('2d', {
+            alpha: false
+        });
+
+        this.nlSeedUsed = Math.floor(Math.random() * (100000000));
         //randomSeed(nlSeedUsed);
 
 
         //Generate Starting Asteroids
-        lAsteroids.add(new Asteroid(Math.random() * w, 0, Math.random() * (1 - -1) - 1), Math.random(1 - -1) - 1, 3);
-        lAsteroids.add(new Asteroid(Math.random() * w, 0, Math.random() * (1 - -1) - 1), Math.random(1 - -1) - 1, 3);
-        lAsteroids.add(new Asteroid(Math.random() * w, 0, Math.random() * (1 - -1) - 1), Math.random(1 - -1) - 1, 3);
-        lAsteroids.add(new Asteroid(Math.random() * w, 0, Math.random() * (1 - -1) - 1), Math.random(1 - -1) - 1, 3);
+        this.lAsteroids.push(new Asteroid(Math.random() * w, 0, Math.random() * (1 - -1) - 1), Math.random(1 - -1) - 1, 3);
+        this.lAsteroids.push(new Asteroid(Math.random() * w, 0, Math.random() * (1 - -1) - 1), Math.random(1 - -1) - 1, 3);
+        this.lAsteroids.push(new Asteroid(Math.random() * w, 0, Math.random() * (1 - -1) - 1), Math.random(1 - -1) - 1, 3);
+        this.lAsteroids.push(new Asteroid(Math.random() * w, 0, Math.random() * (1 - -1) - 1), Math.random(1 - -1) - 1, 3);
 
         //aim one towards the player
         let randX = Math.random() * w;
         let randY = -50 + Math.floor(Math.random() * 2) * (h + 100);
-        lAsteroids.add(new Asteroid(randX, randY, vPos.x - randX, vPos.y - randY, 3));
-        brain = new NeuralNet(9, 16, 4);
+        this.lAsteroids.push(new Asteroid(randX, randY, this.vPos.x - randX, this.vPos.y - randY, 3));
+        this.brain = new NeuralNet(9, 16, 4);
     }
 
 
-    function move() {
+    move() {
+
+        if (!this.bDead) {
+            // this.checkTimer();
+            this.Rotate();
+            if (this.bBooster) {
+                this.boost();
+            } else {
+                this.offBoost();
+            }
+
+            this.vVel.translate(this.vAcc);
+            this.vVel.limit(this.fMaxSpeed);
+            this.vVel.mul(0.99);
+            this.vPos.translate(this.vVel);
+
+            for (let i = 0; i < this.lBullets.length; i++) {
+                this.lBullets[i].move();
+            }
+            for (let i = 0; i < this.lAsteroids.length; i++) {
+                this.lAsteroids[i].move;
+            }
+            if (outOfBounds(this.vPos)) {
+                this.loop();
+            }
+        }
 
     }
 
-    function checkTimer() {
+    checkTimer() {
+
+        this.nLifespan++;
+        this.nShotDelay--;
+        //this.nAsteroidTimer--;
+
+        if (this.nAsteroidTimer <= 0) {
+            let randX = Math.random() * width;
+            let randY = -50 + Math.floor(Math.random() * 2 * (height + 100));
+            this.lAsteroids.push(new Asteroid(randX, randY, this.vPos.x - randX, this.vPos.y - randY, 3));
+            this.nAsteroidTimer = 10000;
+        }
+        if (this.nShotDelay <= 0) {
+            this.bCanShoot = true;
+        }
 
     }
 
-    function boost() {
+    boost() {
+        this.vAcc = Vec2(1, 0);
+        this.vAcc.rotate(this.fRotation);
+        this.vAcc.mul(.1);
+    }
+
+    offBoost() {
+        this.vAcc = Vec2(0, 0);
 
     }
 
-    function offBoost() {
+    Rotate() {
+
+        this.fRotation += this.fSpin;
 
     }
 
-    function Rotate() {
+    draw() {
+
+
+        if (this.bDead) {
+            for (let i = 0; i < this.lBullets.length; i++) {
+                this.lBullets[i].draw();
+            }
+            if (this.nITimer > 0) {
+                this.nITimer--;
+            }
+
+            if (this.nITimer > 0 && Math.floor(this.nITimer.toFixed(2) / 5) % 2 == 0) {
+                //literally just a frame gap
+            } else {
+                this.ctx.fillRect(this.vPos.x, this.vPos.y, 3, 3);
+            }
+
+            for (let asteroid of this.lAsteroids) {
+
+            }
+            console.log("ACCCCCCCCCCCCCCCCCCC");
+        }
 
     }
 
-    function draw() {
 
+    shoot() {
+        if (this.bCanShoot) {
+            this.lBullets.push(new Bullet(vPos.x, vpos.y, this.fRotation, this.vVel.mag()));
+            this.nShotDelay = 30;
+            this.bCanShoot = false;
+            this.nShotsFired++;
+        }
     }
 
-    function shoot() {
-
+    update() {
+        for (let i = 0; i < this.lBullets.length; i++) {
+            if (this.lBullets[i].bOff) {
+                this.lBullets.splice(i, 1);
+                break;
+            }
+        }
+        // this.move();
+        //this.checkPositions();
     }
 
-    function update() {
+    checkPositions() {
 
+        for (let i = 0; i < this.lBullets.length; i++) {
+            for (let j = 0; j < this.lAsteroids.length; j++) {
+                if (this.lAsteroids[j].Hit(this.lBullets[i])) {
+                    this.nShotsHit++;
+                    this.lBullets.splice(i, 1);
+                    this.nScore++;
+                    break;
+                }
+            }
+        }
+
+        //TODO : Asteroids is being all bonky with its method calls. switch to for each loop?
+
+        if (this.nITimer <= 0) {
+            for (let i = 0; i < this.lAsteroids.length; i++) {
+                if (this.lAsteroids[0].onHit(this.vPos)) {
+                    this.playerHit();
+                }
+            }
+        }
     }
 
-    function checkPositions() {
+    resetPos() {
 
+        this.vPos = new Vec2(width / 2, height / 2);
+        this.vVel = new Vec2();
+        this.vAcc = new Vec2();
+        this.lBullets = [];
+        this.fRotation = 0.0;
     }
 
-    function resetPos() {
-
+    playerHit() {
+        if (this.nLives == 0) {
+            this.bDead = true;
+        } else {
+            this.nLives--;
+            this.nITimer = 100;
+            this.resetPos();
+        }
     }
 
-    function playerHit() {
-
-    }
-
-    function loop() {
-
+    loop() {
+        if (this.vPos.y < -50) {
+            this.vPos.y = height + 50;
+        } else {
+            if (this.vPos.y > height + 50) {
+                this.vPos.y = -50;
+            }
+        }
+        if (this.vPos.x < -50) {
+            this.vPos.x = width + 50;
+        } else if (this.vPos.x > width + 50) {
+            this.vPos.x = -50;
+        }
     }
 
     //---------------------------------------------------------------------------------------------------
     //Genetic Algorithm Stuff
 
-    function CalculateFitness() {
+    CalculateFitness() {
+
+        let hitRate = parseFloat(this.nShotsHit) / parseFloat(this.nShotsFired);
+        this.fFitness = (this.nScore + 1) * 10; //Min 10
+        this.fFitness *= this.nLifeSpan;
+        this.fFitness *= hitRate * hitRate; //Uses hitRate squared to force fitness's top priority to be aiming. 
 
     }
 
-    function mutation() {
-
+    mutation() {
+        this.brain.mutate(fGlobalMuteChance);
     }
 
     //------------------------------------------------------
     //Brainy Stuffs that I kind of understand
-    Player clone() {
+    clone() {
+        let clone = new Player();
+        clone.brain = this.brain.clone();
+        return clone;
+    }
+
+    cloneForReplay() {
+
+        //Only used if the random seed content ends up being implemented. 
 
     }
 
-    Player cloneForReplay() {
+    crossover(parent2) {
+
+        let child = new Player();
+        child.brain = brian.crossover(parent2.brain);
+        return child;
 
     }
 
-    Player crossover() {
+    look() {
+
+        this.vision = Array[9];
+
+        let direction = new Vec2(-1, 0);
+        for (let i = 0; i < this.vision.length; i++) {
+            direction = new Vec2(1, 0);
+            direction.rotate((this.fRotation + i * (Math.PI / 4)));
+            direction.mul(10);
+            this.vision[i] = this.lookTowards(direction);
+        }
+
+        if (this.bCanShoot && this.vision[0] != 0) {
+            this.vision[8] = 1;
+        } else {
+            this.vision[8] = 0;
+        }
+    }
+
+    lookTowards(direction) {
+
+        let pos = new Vec2(this.vPos.x, this.vPos.y);
+        let distance = 0;
+
+        pos.translate(direction);
+        distance++;
+
+        while (distance < 60) {
+            for (let i = 0; i < this.lAsteroids.length; i++) {
+                if (this.lAsteroids[i].lookForHit(pos)) {
+                    return 1 / distance;
+                }
+            }
+
+            pos.translate(direction);
+
+            if (pos.y < -50) {
+                pos.y = height + 100;
+            } else
+            if (pos.y > height + 50) {
+                pos.y = -100;
+            }
+            if (pos.x < -50) {
+                pos.x = width + 50;
+            } else if (pos.x > width + 50) {
+                pos.x = -50;
+            }
+            distance++;
+        }
+
+        return 0;
 
     }
 
-    function look() {
-
+    saveMe() {
+        //File stuff
     }
 
-    function lookTowards() {
-
+    loadMe() {
+        //Loading file stuff
     }
 
-    function saveMe() {
+    think() {
 
+        this.decision = brain.output(vision);
+
+        if (this.decision[0] > 0.8) {
+            this.bBooster = true;
+        } else {
+            this.bBooster = false;
+        }
+        if (this.decision[1] > 0.8) {
+            this.fSpin = -0.05;
+        } else {
+            if (this.decision[2] > 0.8) {
+                this.fSpin = 0.05;
+            } else {
+                this.fSpin = 0;
+            }
+        }
+
+        if (this.decision[3] > 0.8) {
+            this.shoot();
+        }
     }
-
-    function loadMe() {
-
-    }
-
-    function think() {
-
-    }
-
-
 }
