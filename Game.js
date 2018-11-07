@@ -8,25 +8,34 @@ let bRunBest = false; // only show best pilot of all time
 let bHumanPlaying = true; //allow user interaction with gameplay
 let width;
 let height;
-let canvas = document.getElementById("mainCanvas");
+let canvas = document.getElementById("mainCanvas");;
 let ctx = canvas.getContext('2d', {
-    alpha: false
-});
+        alpha: false
+    });
 
 function setUp() {
-    ctx.width = document.innerWidth;
-    ctx.height = document.innerHeight;
-    
-    width = document.innerWidth;
-    height = document.innerHeight;
-    
-    width = document.innerWidth;
-    height = document.innerHeight;
 
-    humanPlayer = new Player();
+    ctx.width = window.innerWidth;
+    ctx.height = window.innerHeight;
+    width = ctx.width;
+    height = ctx.height;
+
+
+    humanPlayer = new Player(width, height);
     pop = new Population(200);
     draw();
 }
+
+function updateCanvasSize() {
+  width = window.innerWidth;
+  height = window.innerHeight;
+  canvas.width = width;
+  canvas.height = height;
+  requestAnimationFrame(draw);
+}
+updateCanvasSize();
+window.addEventListener('resize', updateCanvasSize);
+
 
 function draw() {
     ctx.fillStyle = 'black';
@@ -74,7 +83,7 @@ function draw() {
     }
 
     showScore();
-   
+    requestAnimationFrame(draw);
 
 }
 
@@ -82,8 +91,9 @@ function draw() {
 //----------------------------------------------------------------------------------------
 //Keyboard controls for human player
 
-function keyPressed(key) {
-    switch (key) {
+window.onkeydown = function(key) {
+        
+    switch (key.key) {
         //------------------------------------------------------------------------
         //non direct playing control inputs 
         case ' ':
@@ -111,19 +121,19 @@ function keyPressed(key) {
             humanPlayer.bBooster = true;
             break;
         case 'a':
-            humanPlayer.fSpin -= .05;
+            humanPlayer.fSpin = .05;
             break;
         case 's':
-            humanPlayer.fSpin += .05;
+            humanPlayer.fSpin = .05;
             break;
 
     }
 }
 
-function keyReleased(key) {
-    switch (key) {
+window.onkeyup = function(key) {
+    switch (key.key) {
         case 'w':
-            humanPlayer.bBooster = false;
+           humanPlayer.bBooster = false;
             break;
         case 'a':
             humanPlayer.fSpin = 0;
@@ -149,6 +159,4 @@ function showScore() {
     //ehhhhhhhhhhhhhhhhhhhhhh TODO : this I guess. 
 }
 
-
 window.onload = setUp();
-requestAnimationFrame(draw());

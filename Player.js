@@ -1,19 +1,20 @@
 class Player {
 
 
-    constructor() {
-        let w = document.innerWidth;
-        let h = document.innerHeight;
-
-        this.vPos = Vec2(w / 2, h / 2);
-        this.vVel = Vec2();
-        this.vAcc = Vec2();
+    constructor(width, height) {
+        
+        this.w = ctx.width; 
+        this.h = ctx.height;
+        
+        this.vPos = Vec2(this.w / 2, this.h / 2);
+        this.vVel = Vec2(0,0);
+        this.vAcc = Vec2(0,0);
 
 
         this.nScore = 0;
         this.nShotDelay = 0;
         this.fRotation = 0;; //ships current angle;
-        this.fSpin = 0.5; // Angle++
+        this.fSpin = 0.0; // Angle++
         this.fMaxSpeed = 10;
         this.bBooster = false;
         this.lBullets = [];
@@ -42,24 +43,21 @@ class Player {
 
         this.bCanShoot = true; //Used with shotDelay to pace out shots
 
-        this.canvas = document.getElementById("mainCanvas");
-        this.ctx = canvas.getContext('2d', {
-            alpha: false
-        });
+        
 
         this.nlSeedUsed = Math.floor(Math.random() * (100000000));
         //randomSeed(nlSeedUsed);
 
 
         //Generate Starting Asteroids
-        this.lAsteroids.push(new Asteroid(Math.random() * w, 0, Math.random() * (1 - -1) - 1), Math.random(1 - -1) - 1, 3);
-        this.lAsteroids.push(new Asteroid(Math.random() * w, 0, Math.random() * (1 - -1) - 1), Math.random(1 - -1) - 1, 3);
-        this.lAsteroids.push(new Asteroid(Math.random() * w, 0, Math.random() * (1 - -1) - 1), Math.random(1 - -1) - 1, 3);
-        this.lAsteroids.push(new Asteroid(Math.random() * w, 0, Math.random() * (1 - -1) - 1), Math.random(1 - -1) - 1, 3);
+        this.lAsteroids.push(new Asteroid(Math.random() * this.w, 0, Math.random() * (1 - -1) - 1), Math.random(1 - -1) - 1, 3);
+        this.lAsteroids.push(new Asteroid(Math.random() * this.w, 0, Math.random() * (1 - -1) - 1), Math.random(1 - -1) - 1, 3);
+        this.lAsteroids.push(new Asteroid(Math.random() * this.w, 0, Math.random() * (1 - -1) - 1), Math.random(1 - -1) - 1, 3);
+        this.lAsteroids.push(new Asteroid(Math.random() * this.w, 0, Math.random() * (1 - -1) - 1), Math.random(1 - -1) - 1, 3);
 
         //aim one towards the player
-        let randX = Math.random() * w;
-        let randY = -50 + Math.floor(Math.random() * 2) * (h + 100);
+        let randX = Math.random() * this.w;
+        let randY = -50 + Math.floor(Math.random() * 2) * (this.h + 100);
         this.lAsteroids.push(new Asteroid(randX, randY, this.vPos.x - randX, this.vPos.y - randY, 3));
         this.brain = new NeuralNet(9, 16, 4);
     }
@@ -68,7 +66,7 @@ class Player {
     move() {
 
         if (!this.bDead) {
-            // this.checkTimer();
+            this.checkTimer();
             this.Rotate();
             if (this.bBooster) {
                 this.boost();
@@ -98,10 +96,10 @@ class Player {
 
         this.nLifespan++;
         this.nShotDelay--;
-        //this.nAsteroidTimer--;
+        this.nAsteroidTimer--;
 
         if (this.nAsteroidTimer <= 0) {
-            let randX = Math.random() * width;
+            let randX = Math.random() * this.w;
             let randY = -50 + Math.floor(Math.random() * 2 * (height + 100));
             this.lAsteroids.push(new Asteroid(randX, randY, this.vPos.x - randX, this.vPos.y - randY, 3));
             this.nAsteroidTimer = 10000;
@@ -132,7 +130,7 @@ class Player {
     draw() {
 
 
-        if (this.bDead) {
+        if (!this.bDead) {
             for (let i = 0; i < this.lBullets.length; i++) {
                 this.lBullets[i].draw();
             }
@@ -141,15 +139,15 @@ class Player {
             }
 
             if (this.nITimer > 0 && Math.floor(this.nITimer.toFixed(2) / 5) % 2 == 0) {
-                //literally just a frame gap
+               
             } else {
-                this.ctx.fillRect(this.vPos.x, this.vPos.y, 3, 3);
+                ctx.fillStyle = "white";
+                ctx.fillRect(this.vPos.x, this.vPos.y, 10, 10);
             }
 
             for (let asteroid of this.lAsteroids) {
 
             }
-            console.log("ACCCCCCCCCCCCCCCCCCC");
         }
 
     }
@@ -157,7 +155,7 @@ class Player {
 
     shoot() {
         if (this.bCanShoot) {
-            this.lBullets.push(new Bullet(vPos.x, vpos.y, this.fRotation, this.vVel.mag()));
+            this.lBullets.push(new Bullet(this.vPos.x, this.vPos.y, this.fRotation, this.vVel.mag()));
             this.nShotDelay = 30;
             this.bCanShoot = false;
             this.nShotsFired++;
@@ -171,8 +169,8 @@ class Player {
                 break;
             }
         }
-        // this.move();
-        //this.checkPositions();
+        this.move();
+        this.checkPositions();
     }
 
     checkPositions() {
