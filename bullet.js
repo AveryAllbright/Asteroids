@@ -1,10 +1,7 @@
 class Bullet {
 
-
-
-
     constructor(x, y, r, playerSpeed) {
-
+        
         this.vPos;
         this.vVel;
 
@@ -13,43 +10,43 @@ class Bullet {
         this.nLifespan = 60;
 
 
-        vPos = new Vec2(x, y);
-        vVel = new vec2(x * r, y * r);
-        vVel.mul(fSpeed + playerSpeed);
+        this.vPos = Vec2(x, y);
+        this.vVel = Vec2(x * r, y * r);
+        this.vVel.mul(this.fSpeed + this.playerSpeed);
     }
 
     move() {
-        nLifespan--;
-        if (nLifespan < 0) {
-            bOff = true;
+        this.nLifespan--;
+        if (this.nLifespan < 0) {
+            this.bOff = true;
         } else {
-            vPos.translate(vVel);
-            if (outOfBounds(vPos)) {
-                loop();
+            this.vPos.translate(this.vVel);
+            if (outOfBounds(this.vPos)) {
+                this.loop();
             }
         }
     }
 
     draw() {
-        if (!bOff) {
+        if (!this.bOff) {
             ctx.fillStyle = "black";
-            ctx.arc(vpos.x, vPos.y, 3, 0, Math.PI * 2, false);
+            ctx.arc(this.vPos.x, this.vPos.y, 3, 0, Math.PI * 2, false);
         }
     }
 
     loop() {
 
-        if (vPos.y < -50) {
-            vPos.y = height + 50;
+        if (this.vPos.y < -50) {
+            this.vPos.y = ctx.height + 50;
         } else {
-            if (vPos.y > height + 50) {
-                vPos.y = -50;
+            if (this.vPos.y > ctx.height + 50) {
+                this.vPos.y = -50;
             }
         }
-        if (vPos.x < -50) {
-            vPos.x = width + 50;
-        } else if (vPos.x > width + 50) {
-            vPos.x = -50;
+        if (this.vPos.x < -50) {
+            this.vPos.x = ctx.width + 50;
+        } else if (this.vPos.x > ctx.width + 50) {
+            this.vPos.x = -50;
         }
     }
 

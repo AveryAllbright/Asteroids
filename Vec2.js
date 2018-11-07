@@ -33,9 +33,12 @@ const Vec2 = (x, y) => {
         copy() {
             return Vec2(this.x, this.y);
         },
-        dist(v) {
+        dist(v) {            
             let a = this.x - v.x;
-            let b = this.y = v.y;
+            let b = this.y - v.y;
+            
+            
+            
             let c = Math.sqrt(a * a + b * b);
             return c;
         },

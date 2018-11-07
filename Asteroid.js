@@ -12,12 +12,6 @@ class Asteroid {
         this.lChunks = [];
         this.bSplit = false;
 
-        this.canvas = document.getElementById("mainCanvas");
-        this.ctx = canvas.getContext('2d', {
-            alpha: false
-        });
-
-
         this.vPos = Vec2(posX, posY);
         this.nSize = size;
         this.vVel = Vec2(velX, velY);
@@ -44,16 +38,16 @@ class Asteroid {
     }
 
     draw() {
-        
-        console.log("ehhlo");
-        
+
+
+
         if (this.bSplit) {
             this.lChunks.forEach(Element => {
                 draw();
             });
         } else {
-            ctx.strokeStyle = "white";
-            ctx.strokeRect(this.vPos.x, this.vPos.y, this.fRadius, this.fRadius);
+
+            this.drawAsteroid();
         }
     }
 
@@ -80,7 +74,7 @@ class Asteroid {
             }
         }
         if (this.vPos.x < -50) {
-            this.vPos.x =ctx. width + 50;
+            this.vPos.x = ctx.width + 50;
         } else if (this.vPos.x > ctx.width + 50) {
             this.vPos.x = -50;
         }
@@ -88,40 +82,58 @@ class Asteroid {
     }
 
     Hit(bullet) {
-        if (vPos.dist(bullet.vPos) < fRadius) {
-            isHit();
+        if (this.vPos.dist(bullet.vPos) < this.fRadius) {
+            this.isHit();
             return true;
         }
         return false;
     }
-    
-    lookForHit(pos)
-    {
-          if (vPos.dist(bullet.vPos) < fRadius) {
+
+    lookForHit(pos) {
+        if (this.vPos.dist(pos) < this.fRadius) {
             return true;
         }
         return false;
     }
 
     onHit(player) {
-        if (this.vPos.dist(player) < this.fRadius + 15) {
-            isHit();
+        if (this.vPos.dist(player) < this.fRadius + 2) {
+            this.isHit();
             return true;
         }
         return false;
     }
 
     isHit() {
-        bSplit = true;
+        this.bSplit = true;
 
-        if (nSize == 1) {
+        if (this.nSize == 1) {
             return;
         }
 
-        vVel = new Vec2(vVel.x, vVel.y);
-        vVel.rotate(-.3);
-        lChunks.add(new Asteroid(vPos.x, vPos.y, vVel.x, vVel.y, nSize - 1));
-        vVel.rotate(.5);
-        lChunks.add(new Asteroid(vPos.x, vPos.y, vVel.x, vVel.y, nSize - 1));
+        this.vVel = Vec2(this.vVel.x, this.vVel.y);
+        this.vVel.rotate(-.3);
+        this.lChunks.push(new Asteroid(this.vPos.x, this.vPos.y, this.vVel.x, this.vVel.y, this.nSize - 1));
+        this.vVel.rotate(.5);
+        this.lChunks.push(new Asteroid(this.vPos.x, this.vPos.y, this.vVel.x, this.vVel.y, this.nSize - 1));
     }
+
+
+    drawAsteroid() {
+        ctx.strokeStyle = "white";
+        ctx.beginPath();
+        ctx.moveTo(this.vPos.x, this.vPos.y);
+        ctx.lineTo(this.vPos.x + 20, this.vPos.y - 12);
+        ctx.lineTo(this.vPos.x + 35, this.vPos.y);
+        ctx.lineTo(this.vPos.x + 40, this.vPos.y + 15);
+        ctx.lineTo(this.vPos.x + 35, this.vPos.y + 30);
+        ctx.lineTo(this.vPos.x + 20, this.vPos.y + 45);
+        ctx.lineTo(this.vPos.x + 5, this.vPos.y + 45);
+        ctx.stroke();
+    }
+
+
+
+
+
 }

@@ -39,7 +39,7 @@ window.addEventListener('resize', updateCanvasSize);
 
 function draw() {
     ctx.fillStyle = 'black';
-    ctx.fillRect(0, 0, 1000, 1000);
+    ctx.fillRect(0, 0, ctx.width, ctx.height);
 
     //Three play states : human driven, most fit, and evolutionary
 
@@ -72,7 +72,7 @@ function draw() {
         //Fitness Test
         else {
             if (!pop.done()) {
-                pop.updateAlive();
+                pop.updateAlivePlayers();
 
             } else {
                 pop.calculateFitness();
@@ -156,7 +156,6 @@ function outOfBounds(pos) {
 
 
 function showScore() {
-    //ehhhhhhhhhhhhhhhhhhhhhh TODO : this I guess. 
 }
 
 window.onload = setUp();

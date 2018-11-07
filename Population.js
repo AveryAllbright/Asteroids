@@ -20,13 +20,13 @@ class Population {
 
     updateAlivePlayers() {
 
-        for (let i = 0; i < players.length; i++) {
-            if (!players[i].bDead) {
-                players[i].look();
-                players[i].think();
-                players[i].update();
+        for (let i = 0; i < this.players.length; i++) {
+            if (!this.players[i].bDead) {
+                this.players[i].look();
+                this.players[i].think();
+                this.players[i].update();
                 if (!bShowBest || i == 0) {
-                    players[i].draw();
+                    this.players[i].draw();
                 }
             }
         }
@@ -35,24 +35,24 @@ class Population {
     setBestPlayer() {
         let max = 0;
         let index = 0;
-        for (let i = 0; i < players.length; i++) {
-            if (players[i].fFitness > max) {
-                max = players[i].fFitness;
+        for (let i = 0; i < this.players.length; i++) {
+            if (this.players[i].fFitness > max) {
+                max = this.players[i].fFitness;
                 index = i;
             }
         }
 
-        nBestPlayer = index;
+        this.nBestPlayer = index;
 
-        if (players[index].nScore > nBestScore) {
-            nBestScore = players[index].nScore;
-            BestPlayer = players[index].cloneForReplay();
+        if (this.players[index].nScore > this.nBestScore) {
+            this.nBestScore = this.players[index].nScore;
+            this.bestPlayer = this.players[index].cloneForReplay();
         }
     }
 
     done() {
-        for (let i = 0; i < players.length; i++) {
-            if (!players[i].bDead) {
+        for (let i = 0; i < this.players.length; i++) {
+            if (!this.players[i].bDead) {
                 return false;
             }
         }
@@ -60,55 +60,55 @@ class Population {
     }
 
     naturalSelection() {
-        let newPlayers = Array[players.length];
+        let newPlayers = Array[this.players.length];
 
-        setBestPlayer();
+        this.setBestPlayer();
 
-        newPlayers[0] = players[nBestPlayer].cloneForReplay();
+        newPlayers[0] = this.players[this.nBestPlayer].cloneForReplay();
 
-        for (let i = 1; i < players.length; i++) {
-            if (i < players.length / 2) {
-                newPlayers[i] = selectPlayer().clone();
+        for (let i = 1; i < this.players.length; i++) {
+            if (i < this.players.length / 2) {
+                newPlayers[i] = this.selectPlayer().clone();
             } else {
-                newPlayers[i] = selectPlayer().crossover(selectPlayer());
+                newPlayers[i] = this.selectPlayer().crossover(this.selectPlayer());
             }
 
             newPlayers[i].mutate();
         }
 
-        players = newPlayers.clone();
-        gen++;
+        this.players = newPlayers.clone();
+        this.nGen++;
     }
 
     selectPlayer() {
         let fitness = 0;
-        for (let i = 0; i < players.length; i++) {
-            fitness += players[i].fFitness;
+        for (let i = 0; i < this.players.length; i++) {
+            fitness += this.players[i].fFitness;
         }
 
         let rand = Math.floor(Math.random() * fitness);
 
         let sum = 0;
 
-        for (let i = 0; i < players.length; i++) {
-            sum += players[i].fFitness;
+        for (let i = 0; i < this.players.length; i++) {
+            sum += this.players[i].fFitness;
             if (sum > rand) {
-                return players[i];
+                return this.players[i];
             }
         }
-        return players[0];
+        return this.players[0];
     }
 
 
     mutate() {
-        for (let i = 0; i < players.length; i++) {
-            players[i].mutate();
+        for (let i = 0; i < this.players.length; i++) {
+            this.players[i].mutate();
         }
     }
 
     calculateFitness() {
-        for (let i = 0; i < players.length; i++) {
-            players[i].calculateFitness();
+        for (let i = 0; i < this.players.length; i++) {
+            this.players[i].calculateFitness();
         }
     }
 }

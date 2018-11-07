@@ -28,8 +28,8 @@ class Player {
 
 
         this.brain = new NeuralNet(9, 16, 4); //Net
-        this.vision = Array[8];
-        this.decision = Array[4];
+        this.vision = [];
+        this.decision = [];
         this.bReplay = false;
         this.nlSeedUsed;
         this.lSeeds = [];
@@ -46,7 +46,6 @@ class Player {
         
 
         this.nlSeedUsed = Math.floor(Math.random() * (100000000));
-        //randomSeed(nlSeedUsed);
 
 
         //Generate Starting Asteroids
@@ -83,7 +82,6 @@ class Player {
                 this.lBullets[i].move();
             }
             for (let i = 0; i < this.lAsteroids.length; i++) {
-                console.log(this.lAsteroids[i]);
                 this.lAsteroids[i].move();
             }
             if (outOfBounds(this.vPos)) {
@@ -97,12 +95,12 @@ class Player {
 
         this.nLifespan++;
         this.nShotDelay--;
-        //this.nAsteroidTimer--;
+        this.nAsteroidTimer--;
 
         if (this.nAsteroidTimer <= 0) {
             let randX = Math.random() * this.w;
             let randY = -50 + Math.floor(Math.random() * 2 * (height + 100));
-            //this.lAsteroids.push(new Asteroid(randX, randY, this.vPos.x - randX, this.vPos.y - randY, 3));
+            this.lAsteroids.push(new Asteroid(randX, randY, this.vPos.x - randX, this.vPos.y - randY, 3));
             this.nAsteroidTimer = 10000;
         }
         if (this.nShotDelay <= 0) {
@@ -142,12 +140,14 @@ class Player {
             if (this.nITimer > 0 && Math.floor(this.nITimer.toFixed(2) / 5) % 2 == 0) {
                
             } else {
-                this.drawShip();
+               
             }
 
             for (let asteroid of this.lAsteroids) {
                 asteroid.draw();
             }
+            
+             this.drawShip();
         }
 
     }
@@ -186,27 +186,33 @@ class Player {
             }
         }
 
-        //TODO : Asteroids is being all bonky with its method calls. switch to for each loop?
 
         if (this.nITimer <= 0) {
-            for (let i = 0; i < this.lAsteroids.length; i++) {
-                if (this.lAsteroids[0].onHit(this.vPos)) {
-                    this.playerHit();
+            
+            for(let asteroid of this.lAsteroids)
+                {
+                    if(asteroid.onHit(this.vPos))
+                        {
+                            this.playerHit();
+                        }
                 }
-            }
+            
         }
     }
 
     resetPos() {
 
-        this.vPos = new Vec2(width / 2, height / 2);
-        this.vVel = new Vec2();
-        this.vAcc = new Vec2();
+        this.vPos = Vec2(width / 2, height / 2);
+        this.vVel = Vec2(0,0);
+        this.vAcc = Vec2(0,0);
         this.lBullets = [];
         this.fRotation = 0.0;
     }
 
     playerHit() {
+        
+        console.log("ow");
+        
         if (this.nLives == 0) {
             this.bDead = true;
         } else {
@@ -271,11 +277,11 @@ class Player {
 
     look() {
 
-        this.vision = Array[9];
+        this.vision.push(0,0,0,0,0,0,0,0,0);
 
-        let direction = new Vec2(-1, 0);
+        let direction = Vec2(-1, 0);
         for (let i = 0; i < this.vision.length; i++) {
-            direction = new Vec2(1, 0);
+            direction = Vec2(1, 0);
             direction.rotate((this.fRotation + i * (Math.PI / 4)));
             direction.mul(10);
             this.vision[i] = this.lookTowards(direction);
@@ -290,7 +296,7 @@ class Player {
 
     lookTowards(direction) {
 
-        let pos = new Vec2(this.vPos.x, this.vPos.y);
+        let pos = Vec2(this.vPos.x, this.vPos.y);
         let distance = 0;
 
         pos.translate(direction);
@@ -333,7 +339,7 @@ class Player {
 
     think() {
 
-        this.decision = brain.output(vision);
+        this.decision = this.brain.output(this.vision);
 
         if (this.decision[0] > 0.8) {
             this.bBooster = true;
@@ -357,15 +363,13 @@ class Player {
     
     drawShip()
     {
-        ctx.save();
+        
         ctx.strokeStyle = 'white';
-        ctx.translate(this.vPos.x, this.vPos.y);
-        ctx.rotate(this.fRotation);
-        ctx.moveTo(0,0);
-        ctx.lineTo(10,-10);
-        ctx.lineTo(-10,-10);
-        ctx.lineTo(0,0);
+        ctx.beginPath();
+        ctx.moveTo(this.vPos.x, this.vPos.y);
+        ctx.lineTo(this.vPos.x - 10,this.vPos.y  + 10);
+        ctx.lineTo(this.vPos.x -10,this.vPos.y - 10);
+        ctx.lineTo(this.vPos.x, this.vPos.y);
         ctx.stroke();
-        ctx.restore();
     }
 }
