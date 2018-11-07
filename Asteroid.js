@@ -129,6 +129,8 @@ class Asteroid {
         ctx.lineTo(this.vPos.x + 35, this.vPos.y + 30);
         ctx.lineTo(this.vPos.x + 20, this.vPos.y + 45);
         ctx.lineTo(this.vPos.x + 5, this.vPos.y + 45);
+        ctx.lineTo(this.vPos.x - 10, this.vPos.y + 20);
+        ctx.lineTo(this.vPos.x, this.vPos.y);
         ctx.stroke();
     }
 
