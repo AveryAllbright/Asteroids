@@ -211,8 +211,6 @@ class Player {
 
     playerHit() {
         
-        console.log("ow");
-        
         if (this.nLives == 0) {
             this.bDead = true;
         } else {
@@ -338,6 +336,8 @@ class Player {
     }
 
     think() {
+        
+        console.log(this.vision);
 
         this.decision = this.brain.output(this.vision);
 

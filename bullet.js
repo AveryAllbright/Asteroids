@@ -29,7 +29,7 @@ class Bullet {
 
     draw() {
         if (!this.bOff) {
-            ctx.fillStyle = "black";
+            ctx.strokeStyle = 'white';
             ctx.arc(this.vPos.x, this.vPos.y, 3, 0, Math.PI * 2, false);
         }
     }

@@ -25,16 +25,50 @@ class NeuralNet {
     }
 
 
-    output() {
+    output(inputArr) {
+
+        let inputs = this.hiddensOutputs.singleColumnMatrix(inputArr);
+
+        let Bias = inputs.Bias();
+
+        let WeightedHiddenInputs = this.hiddensInputs.dot(Bias);
+
+        let WeightedHiddenOutputs = WeightedHiddenInputs.activate();
+
+        let WeightedHiddenOutputsBias = WeightedHiddenOutputs.Bias();
+
+        let HI2 = this.hiddenshiddens.dot(WeightedHiddenOutputsBias);
+
+        let HO2 = HI2.activate();
+        let HOB2 = HO2.Bias();
+
+
+
+        let OutIn = this.hiddensOutputs.dot(HOB2);
+
+        let Out = OutIn.activate();
+
+        return Out.toArray();
 
     }
 
-    crossover() {
+    crossover(mate) {
+
+        let child = new NeuralNet(this.inputs, this.hiddens, this.outputs);
+
+        child.hiddensInputs = this.hiddensInputs.crossover(mate.hiddensInputs);
+        child.hiddenshiddens = this.hiddenshiddens.crossover(mate.hiddenshiddens);
+        child.hiddensOutputs = this.hiddensOutputs.crossover(mate.hiddensOutputs);
 
     }
 
     clone() {
-
+        
+        let clone = new NeuralNet(this.inputs, this.hiddens, this.outputs);
+        
+        clone.hiddensInputs = this.hiddensInputs.clone();
+        clone.hiddenshiddens = this.hiddenshiddens.clone();
+        clone.hiddensOutputs = this.hiddensOutputs.clone();
     }
 
 }
