@@ -44,6 +44,9 @@ class Asteroid {
     }
 
     draw() {
+        
+        console.log("ehhlo");
+        
         if (this.bSplit) {
             this.lChunks.forEach(Element => {
                 draw();
@@ -69,17 +72,17 @@ class Asteroid {
 
     loop() {
 
-        if (vPos.y < -50) {
-            vPos.y = height + 50;
+        if (this.vPos.y < -50) {
+            this.vPos.y = ctx.height + 50;
         } else {
-            if (vPos.y > height + 50) {
-                vPos.y = -50;
+            if (this.vPos.y > ctx.height + 50) {
+                this.vPos.y = -50;
             }
         }
-        if (vPos.x < -50) {
-            vPos.x = width + 50;
-        } else if (vPos.x > width + 50) {
-            vPos.x = -50;
+        if (this.vPos.x < -50) {
+            this.vPos.x =ctx. width + 50;
+        } else if (this.vPos.x > ctx.width + 50) {
+            this.vPos.x = -50;
         }
 
     }

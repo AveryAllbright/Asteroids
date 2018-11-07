@@ -50,10 +50,10 @@ class Player {
 
 
         //Generate Starting Asteroids
-        this.lAsteroids.push(new Asteroid(Math.random() * this.w, 0, Math.random() * (1 - -1) - 1), Math.random(1 - -1) - 1, 3);
-        this.lAsteroids.push(new Asteroid(Math.random() * this.w, 0, Math.random() * (1 - -1) - 1), Math.random(1 - -1) - 1, 3);
-        this.lAsteroids.push(new Asteroid(Math.random() * this.w, 0, Math.random() * (1 - -1) - 1), Math.random(1 - -1) - 1, 3);
-        this.lAsteroids.push(new Asteroid(Math.random() * this.w, 0, Math.random() * (1 - -1) - 1), Math.random(1 - -1) - 1, 3);
+        this.lAsteroids.push(new Asteroid(Math.random() * this.w, 0, Math.random() * (1 - -1) - 1, Math.random(1 - -1) - 1, 3));
+        this.lAsteroids.push(new Asteroid(Math.random() * this.w, 0, Math.random() * (1 - -1) - 1, Math.random(1 - -1) - 1, 3));
+        this.lAsteroids.push(new Asteroid(Math.random() * this.w, 0, Math.random() * (1 - -1) - 1, Math.random(1 - -1) - 1, 3));
+        this.lAsteroids.push(new Asteroid(Math.random() * this.w, 0, Math.random() * (1 - -1) - 1, Math.random(1 - -1) - 1, 3));
 
         //aim one towards the player
         let randX = Math.random() * this.w;
@@ -83,7 +83,8 @@ class Player {
                 this.lBullets[i].move();
             }
             for (let i = 0; i < this.lAsteroids.length; i++) {
-                this.lAsteroids[i].move;
+                console.log(this.lAsteroids[i]);
+                this.lAsteroids[i].move();
             }
             if (outOfBounds(this.vPos)) {
                 this.loop();
@@ -96,12 +97,12 @@ class Player {
 
         this.nLifespan++;
         this.nShotDelay--;
-        this.nAsteroidTimer--;
+        //this.nAsteroidTimer--;
 
         if (this.nAsteroidTimer <= 0) {
             let randX = Math.random() * this.w;
             let randY = -50 + Math.floor(Math.random() * 2 * (height + 100));
-            this.lAsteroids.push(new Asteroid(randX, randY, this.vPos.x - randX, this.vPos.y - randY, 3));
+            //this.lAsteroids.push(new Asteroid(randX, randY, this.vPos.x - randX, this.vPos.y - randY, 3));
             this.nAsteroidTimer = 10000;
         }
         if (this.nShotDelay <= 0) {
@@ -141,12 +142,11 @@ class Player {
             if (this.nITimer > 0 && Math.floor(this.nITimer.toFixed(2) / 5) % 2 == 0) {
                
             } else {
-                ctx.fillStyle = "white";
-                ctx.fillRect(this.vPos.x, this.vPos.y, 10, 10);
+                this.drawShip();
             }
 
             for (let asteroid of this.lAsteroids) {
-
+                asteroid.draw();
             }
         }
 
@@ -353,5 +353,19 @@ class Player {
         if (this.decision[3] > 0.8) {
             this.shoot();
         }
+    }
+    
+    drawShip()
+    {
+        ctx.save();
+        ctx.strokeStyle = 'white';
+        ctx.translate(this.vPos.x, this.vPos.y);
+        ctx.rotate(this.fRotation);
+        ctx.moveTo(0,0);
+        ctx.lineTo(10,-10);
+        ctx.lineTo(-10,-10);
+        ctx.lineTo(0,0);
+        ctx.stroke();
+        ctx.restore();
     }
 }

@@ -39,7 +39,7 @@ window.addEventListener('resize', updateCanvasSize);
 
 function draw() {
     ctx.fillStyle = 'black';
-    ctx.fillRect(0, 0, width, height);
+    ctx.fillRect(0, 0, 1000, 1000);
 
     //Three play states : human driven, most fit, and evolutionary
 
