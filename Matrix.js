@@ -33,14 +33,17 @@ class Matrix {
     }
 
     dot(matrix) {
+                
         let result = new Matrix(this.rows, matrix.cols);
+        // console.log(matrix);
 
         if (this.cols == matrix.rows) {
             for (let i = 0; i < this.rows; i++) {
                 for (let j = 0; j < matrix.cols; j++) {
                     let sum = 0;
                     for (let k = 0; k < this.cols; k++) {
-                        sum += this.matrix[i][k] * matrix[k][j];
+                        sum += this.matrix[i][k] * matrix.matrix[k][j];
+                       
                     }
                     result.matrix[i][j] = sum;
                 }
@@ -136,6 +139,8 @@ class Matrix {
         for (let i = 0; i < array.length; i++) {
             newMat.matrix[i][0] = array[i];
         }
+        
+        return newMat;
 
     }
 
@@ -155,13 +160,10 @@ class Matrix {
 
         for (let i = 0; i < this.rows; i++) {
             for (let j = 0; j < this.cols; j++) {
-                array[j + i * this.cols] = matrix[i][j];
+                array[j + i * this.cols] = this.matrix[i][j];
             }
         }
-
         return array;
-
-
     }
 
     Bias() {

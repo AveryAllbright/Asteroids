@@ -26,12 +26,12 @@ class NeuralNet {
 
 
     output(inputArr) {
+                
+        let inputs = (this.hiddensOutputs.singleColumnMatrix(inputArr));
 
-        let inputs = this.hiddensOutputs.singleColumnMatrix(inputArr);
+        let Biased = inputs.Bias();
 
-        let Bias = inputs.Bias();
-
-        let WeightedHiddenInputs = this.hiddensInputs.dot(Bias);
+        let WeightedHiddenInputs = this.hiddensInputs.dot(Biased);
 
         let WeightedHiddenOutputs = WeightedHiddenInputs.activate();
 

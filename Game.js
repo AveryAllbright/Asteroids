@@ -5,7 +5,7 @@ let fGlobalMuteChance = .01;
 
 let bShowBest = true; //Show the best of the previous generation only
 let bRunBest = false; // only show best pilot of all time
-let bHumanPlaying = true; //allow user interaction with gameplay
+let bHumanPlaying = false; //allow user interaction with gameplay
 let width;
 let height;
 let canvas = document.getElementById("mainCanvas");;

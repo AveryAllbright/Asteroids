@@ -27,7 +27,7 @@ class Player {
         this.nBoostTimer = 10;
 
 
-        this.brain = new NeuralNet(9, 16, 4); //Net
+        this.brain = new NeuralNet(4, 4, 2); //Net
         this.vision = [];
         this.decision = [];
         this.bReplay = false;
@@ -337,8 +337,6 @@ class Player {
 
     think() {
         
-        console.log(this.vision);
-
         this.decision = this.brain.output(this.vision);
 
         if (this.decision[0] > 0.8) {
