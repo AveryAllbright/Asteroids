@@ -5,9 +5,11 @@ class Population {
 
         this.players = [];
         this.nBestPlayer = 0;
+        this.currentPlayer = 0;
         this.nGen = 0;
         this.bestPlayer;
         this.nBestScore = 0;
+        this.done = false;
 
         this.players = [];
         for (let i = 0; i < size; i++) {
@@ -20,16 +22,16 @@ class Population {
 
     updateAlivePlayers() {
 
-        for (let i = 0; i < this.players.length; i++) {
-            if (!this.players[i].bDead) {
-                this.players[i].look();
-                this.players[i].think();
-                this.players[i].update();
-                if (!bShowBest || i == 0) {
-                    this.players[i].draw();
+            if (!this.players[this.currentPlayer].bDead) {
+                this.players[this.currentPlayer].look();
+                this.players[this.currentPlayer].think();
+                this.players[this.currentPlayer].update();
+                this.players[this.currentPlayer].draw();
                 }
-            }
+        else{
+            this.currentPlayer++;
         }
+        
     }
 
     setBestPlayer() {
@@ -51,12 +53,13 @@ class Population {
     }
 
     done() {
-        for (let i = 0; i < this.players.length; i++) {
-            if (!this.players[i].bDead) {
-                return false;
+        if(!this.players[this.currentPlayer].bDead)
+            {
+                this.done = false;
             }
-        }
-        return true;
+            
+        
+        this.done = true;
     }
 
     naturalSelection() {

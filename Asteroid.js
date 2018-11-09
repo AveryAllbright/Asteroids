@@ -39,28 +39,14 @@ class Asteroid {
 
     draw() {
 
-
-
-        if (this.bSplit) {
-            this.lChunks.forEach(Element => {
-                draw();
-            });
-        } else {
-
-            this.drawAsteroid();
-        }
+        this.drawAsteroid();
     }
 
     move() {
-        if (this.bSplit) {
-            this.lChunks.forEach(Element => {
-                this.move();
-            });
-        } else {
-            this.vPos.translate(this.vVel);
-            if (outOfBounds(this.vPos)) {
-                this.loop();
-            }
+
+        this.vPos.translate(this.vVel);
+        if (outOfBounds(this.vPos)) {
+            this.loop();
         }
     }
 
@@ -111,11 +97,7 @@ class Asteroid {
             return;
         }
 
-        this.vVel = Vec2(this.vVel.x, this.vVel.y);
-        this.vVel.rotate(-.3);
-        this.lChunks.push(new Asteroid(this.vPos.x, this.vPos.y, this.vVel.x, this.vVel.y, this.nSize - 1));
-        this.vVel.rotate(.5);
-        this.lChunks.push(new Asteroid(this.vPos.x, this.vPos.y, this.vVel.x, this.vVel.y, this.nSize - 1));
+       
     }
 
 

@@ -2,17 +2,19 @@ class Bullet {
 
     constructor(x, y, r, playerSpeed) {
         
-        this.vPos;
-        this.vVel;
+        
 
-        this.fSpeed = 10;
+        this.fSpeed =  10.0;
         this.bOff = false;
         this.nLifespan = 60;
 
 
         this.vPos = Vec2(x, y);
-        this.vVel = Vec2(x * r, y * r);
-        this.vVel.mul(this.fSpeed + this.playerSpeed);
+        this.vVel = Vec2(1 , 0 );
+        this.vVel = this.vVel.rotate(r);
+        
+        this.vVel = this.vVel.mul((this.fSpeed + playerSpeed));
+       
     }
 
     move() {
@@ -29,8 +31,16 @@ class Bullet {
 
     draw() {
         if (!this.bOff) {
+            
+            //console.log(this.vPos.x, this.vPos.y);
+            
             ctx.strokeStyle = 'white';
-            ctx.arc(this.vPos.x, this.vPos.y, 3, 0, Math.PI * 2, false);
+            //ctx.fillStyle = 'white';
+            ctx.beginPath();
+            ctx.arc(this.vPos.x, this.vPos.y, 15, 0, Math.PI * 2, false);
+            //ctx.closePath();
+            ctx.stroke();
+            //ctx.fill();
         }
     }
 

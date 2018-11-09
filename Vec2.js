@@ -17,6 +17,7 @@ const Vec2 = (x, y) => {
             return this;
         },
         mul(v) {
+           
             this.x *= v;
             this.y *= v;
             return this;

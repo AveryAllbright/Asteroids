@@ -140,14 +140,14 @@ class Player {
             if (this.nITimer > 0 && Math.floor(this.nITimer.toFixed(2) / 5) % 2 == 0) {
                
             } else {
-               
+               this.drawShip();
             }
 
             for (let asteroid of this.lAsteroids) {
                 asteroid.draw();
             }
             
-             this.drawShip();
+             
         }
 
     }
@@ -361,13 +361,16 @@ class Player {
     
     drawShip()
     {
-        
+        ctx.save();
+        ctx.translate(this.vPos.x, this.vPos.y);
+        ctx.rotate(this.fRotation);
         ctx.strokeStyle = 'white';
         ctx.beginPath();
-        ctx.moveTo(this.vPos.x, this.vPos.y);
-        ctx.lineTo(this.vPos.x - 10,this.vPos.y  + 10);
-        ctx.lineTo(this.vPos.x -10,this.vPos.y - 10);
-        ctx.lineTo(this.vPos.x, this.vPos.y);
+        ctx.moveTo(0,0);
+        ctx.lineTo(- 10,10);
+        ctx.lineTo(-10,- 10);
+        ctx.lineTo(0,0);
         ctx.stroke();
+        ctx.restore();
     }
 }

@@ -28,10 +28,9 @@ class NeuralNet {
     output(inputArr) {
                 
         let inputs = (this.hiddensOutputs.singleColumnMatrix(inputArr));
-
         let Biased = inputs.Bias();
 
-        let WeightedHiddenInputs = this.hiddensInputs.dot(Biased);
+        let WeightedHiddenInputs = this.hiddensInputs.dot(inputs);
 
         let WeightedHiddenOutputs = WeightedHiddenInputs.activate();
 
@@ -47,9 +46,9 @@ class NeuralNet {
         let OutIn = this.hiddensOutputs.dot(HOB2);
 
         let Out = OutIn.activate();
+        
 
         return Out.toArray();
-
     }
 
     crossover(mate) {
