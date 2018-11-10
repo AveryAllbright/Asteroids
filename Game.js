@@ -1,18 +1,22 @@
-let humanPlayer;
-let pop;
-let nSpeed = 100;
-let fGlobalMuteChance = .01;
+let humanPlayer;    //The Active ship if a human is playing the game
+let pop;            //The active generation of ships
+let fGlobalMuteChance = .01; //chance that the matrix will mutate when a generation is seeded
 
 let bShowBest = true; //Show the best of the previous generation only
 let bRunBest = false; // only show best pilot of all time
 let bHumanPlaying = true; //allow user interaction with gameplay
-let width;
-let height;
+let width; //screen space
+let height; //screen space
 let canvas = document.getElementById("mainCanvas");;
 let ctx = canvas.getContext('2d', {
         alpha: false
     });
 
+    //----------------------------------------------------------------
+    //Usage : Sets up the intitial generation of ships and spawns a human controlled ship for 1 game
+    //Arg   : 
+    //Return:
+    //----------------------------------------------------------------
 function setUp() {
 
     ctx.width = window.innerWidth;
@@ -20,12 +24,16 @@ function setUp() {
     width = ctx.width;
     height = ctx.height;
 
-
     humanPlayer = new Player(width, height);
-    pop = new Population(200);
+    pop = new Population(4);
     draw();
 }
 
+//----------------------------------------------------------------
+    //Usage : deals with screen space resizing
+    //Arg   : 
+    //Return:
+    //----------------------------------------------------------------
 function updateCanvasSize() {
   width = window.innerWidth;
   height = window.innerHeight;
@@ -33,17 +41,23 @@ function updateCanvasSize() {
   canvas.height = height;
   requestAnimationFrame(draw);
 }
+
 updateCanvasSize();
 window.addEventListener('resize', updateCanvasSize);
 
 
+    //----------------------------------------------------------------
+    //Usage : handles all code for gameplay
+    //Arg   : 
+    //Return:
+    //----------------------------------------------------------------
 function draw() {
     ctx.fillStyle = 'black';
     ctx.fillRect(0, 0, ctx.width, ctx.height);
 
     //Three play states : human driven, most fit, and evolutionary
 
-    //---------------------------------------------------------------------------------------------------------
+    //----------------------------------------------------------------
     //Human Run
     if (bHumanPlaying) {
         if (!humanPlayer.bDead) {
@@ -54,10 +68,10 @@ function draw() {
         }
     }
 
-    //----------------------------------------------------------------------------------------------------------
+    //----------------------------------------------------------------
     //Best Run
     else {
-        if (bRunBest) {
+        if (bRunBest) { //instead of running through every trial, it simply lets the best ship from that generation play forever
             if (!pop.bestPlayer.dead) {
                 pop.bestPlayer.look();
                 pop.bestPlayer.think();
@@ -68,28 +82,26 @@ function draw() {
                 pop.bestPlayer = pop.bestPlayer.cloneForReplay();
             }
         }
-        //--------------------------------------------------------------------------------------------------
-        //Fitness Test
+        //----------------------------------------------------------------
+        //Fitness Test 
         else {
-            if (!pop.done) {
+            if (!pop.done()) { //runs through every single ship in a generation to get their fitness values
                 pop.updateAlivePlayers();
 
-            } else {
+            } else { //Calcs the fitness level of each ship, and creates the next generation. Pop.done revereted to false
                 pop.calculateFitness();
                 pop.naturalSelection();
             }
         }
-
     }
-
     showScore();
     requestAnimationFrame(draw);
-
 }
 
 
 //----------------------------------------------------------------------------------------
 //Keyboard controls for human player
+
 
 window.onkeydown = function(key) {
         
@@ -124,7 +136,7 @@ window.onkeydown = function(key) {
             humanPlayer.fSpin = .05;
             break;
         case 's':
-            humanPlayer.fSpin = .05;
+            humanPlayer.fSpin = -.05;
             break;
 
     }
@@ -153,7 +165,6 @@ function outOfBounds(pos) {
     }
     return false;
 }
-
 
 function showScore() {
 }

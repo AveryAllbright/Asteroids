@@ -49,10 +49,10 @@ class Player {
         this.nlSeedUsed = Math.floor(Math.random() * (100000000));
 
         //Generate Starting Asteroids
-        this.lAsteroids.push(new Asteroid(Math.random() * this.w, 0, Math.random() * (1 - -1) - 1, Math.random(1 - -1) - 1, 3));
-        this.lAsteroids.push(new Asteroid(Math.random() * this.w, 0, Math.random() * (1 - -1) - 1, Math.random(1 - -1) - 1, 3));
-        this.lAsteroids.push(new Asteroid(Math.random() * this.w, 0, Math.random() * (1 - -1) - 1, Math.random(1 - -1) - 1, 3));
-        this.lAsteroids.push(new Asteroid(Math.random() * this.w, 0, Math.random() * (1 - -1) - 1, Math.random(1 - -1) - 1, 3));
+        this.lAsteroids.push(new Asteroid(Math.random() * this.w, 0, Math.random() * (2) - 1, Math.random(2) - 1, 3));
+        this.lAsteroids.push(new Asteroid(Math.random() * this.w, 0, Math.random() * (2) - 1, Math.random(2) - 1, 3));
+        this.lAsteroids.push(new Asteroid(0, Math.random() * this.h, Math.random() * (2) - 1, Math.random(2) - 1, 3));
+        this.lAsteroids.push(new Asteroid(Math.random() * this.w, Math.random() * this.h, Math.random() * (2) - 1, Math.random(2) - 1, 3));
 
         //aim one towards the player
         let randX = Math.random() * this.w;
@@ -156,38 +156,31 @@ class Player {
             if (this.nITimer > 0) {
                 this.nITimer--;
             }
-
-            if (this.nITimer > 0 && Math.floor(this.nITimer.toFixed(2) / 5) % 2 == 0) {
-
-            } else {
+            if (this.nITimer > 0 && Math.floor(this.nITimer.toFixed(2) / 5) % 2 == 0) {} else {
                 this.drawShip();
             }
-
             for (let asteroid of this.lAsteroids) {
                 asteroid.draw();
             }
-
-
         }
-
     }
 
     //----------------------------------------------------------------
-    //Usage : Goes through the list of players and runs them through the fitness tool
+    //Usage : Spawns bullets and increments shot count
     //Arg   : 
     //Return:
     //----------------------------------------------------------------
     shoot() {
-        if (this.bCanShoot) {
-            this.lBullets.push(new Bullet(this.vPos.x, this.vPos.y, this.fRotation, this.vVel.mag()));
-            this.nShotDelay = 30;
-            this.bCanShoot = false;
-            this.nShotsFired++;
+        if (this.bCanShoot) { //only shoot if the timer has gone down
+            this.lBullets.push(new Bullet(this.vPos.x, this.vPos.y, this.fRotation, this.vVel.mag())); //spawn a new bullet at the ship
+            this.nShotDelay = 30; //Reset the shot timer
+            this.bCanShoot = false; //reset the shot allowance
+            this.nShotsFired++; //increment the shoot count
         }
     }
 
     //----------------------------------------------------------------
-    //Usage : Goes through the list of players and runs them through the fitness tool
+    //Usage : Turns off Bullets once their live span has expired, removes them from array, moves all entities, and checks for collisions
     //Arg   : 
     //Return:
     //----------------------------------------------------------------
@@ -203,7 +196,7 @@ class Player {
     }
 
     //----------------------------------------------------------------
-    //Usage : Goes through the list of players and runs them through the fitness tool
+    //Usage : Checks for all collisions between the bullets and asteroids, and asteroids and the ship
     //Arg   : 
     //Return:
     //----------------------------------------------------------------
@@ -212,34 +205,36 @@ class Player {
         for (let i = 0; i < this.lBullets.length; i++) {
             for (let j = 0; j < this.lAsteroids.length; j++) {
                 if (this.lAsteroids[j].Hit(this.lBullets[i])) {
-                    this.nShotsHit++;
-                    this.lBullets.splice(i, 1);
-                    this.nScore++;
+                    this.nShotsHit++; //increments successful hits for hit ratio
+                    this.lBullets.splice(i, 1); //removes the bullet
+                    this.nScore++; //and ups the score
+                    let size = this.lAsteroids[j].nSize;
+                    size--;
+                    let place = this.lAsteroids[j].vPos;
+                    this.lAsteroids.splice(j,1);
+                    this.lAsteroids.push(new Asteroid(place.x + Math.random() * 3 - 5, place.y + Math.random() * 3 - 5, Math.random() * (2) - 1, Math.random(2) - 1, size));
+                    this.lAsteroids.push(new Asteroid(place.x + Math.random() * 3 - 5, place.y + Math.random() * 3 - 5, Math.random() * (2) - 1, Math.random(2) - 1, size));
+                    this.lAsteroids.push(new Asteroid(place.x + Math.random() * 3 - 5, place.y + Math.random() * 3 - 5, Math.random() * (2) - 1, Math.random(2) - 1, size));
                     break;
                 }
             }
         }
-
-
-        if (this.nITimer <= 0) {
-
+        if (this.nITimer <= 0) { //Only count collisions if the iFrame timer isn't active
             for (let asteroid of this.lAsteroids) {
                 if (asteroid.onHit(this.vPos)) {
                     this.playerHit();
                 }
             }
-
         }
     }
 
     //----------------------------------------------------------------
-    //Usage : Goes through the list of players and runs them through the fitness tool
+    //Usage : reset the ship to the center of the world. Only used if reset is enabled
     //Arg   : 
     //Return:
     //----------------------------------------------------------------
     resetPos() {
-
-        this.vPos = Vec2(width / 2, height / 2);
+        this.vPos = Vec2(this.w / 2, this.h / 2);
         this.vVel = Vec2(0, 0);
         this.vAcc = Vec2(0, 0);
         this.lBullets = [];
@@ -247,12 +242,11 @@ class Player {
     }
 
     //----------------------------------------------------------------
-    //Usage : Goes through the list of players and runs them through the fitness tool
+    //Usage : deals with player death
     //Arg   : 
     //Return:
     //----------------------------------------------------------------
     playerHit() {
-
         if (this.nLives == 0) {
             this.bDead = true;
         } else {
@@ -263,7 +257,7 @@ class Player {
     }
 
     //----------------------------------------------------------------
-    //Usage : Goes through the list of players and runs them through the fitness tool
+    //Usage : Deals with bounding and looping the screen
     //Arg   : 
     //Return:
     //----------------------------------------------------------------
@@ -287,21 +281,22 @@ class Player {
     //----------------------------------------------------------------
 
     //----------------------------------------------------------------
-    //Usage : Goes through the list of players and runs them through the fitness tool
+    //Usage : Fitness Test
     //Arg   : 
     //Return:
     //----------------------------------------------------------------
     CalculateFitness() {
 
-        let hitRate = parseFloat(this.nShotsHit) / parseFloat(this.nShotsFired);
+        let hitRate = parseFloat(this.nShotsHit) / parseFloat(this.nShotsFired); //Percentage of shots that hit asteroids
         this.fFitness = (this.nScore + 1) * 10; //Min 10
         this.fFitness *= this.nLifeSpan;
         this.fFitness *= hitRate * hitRate; //Uses hitRate squared to force fitness's top priority to be aiming. 
+        //Final fitness is determined by score * time alive *(hitRate * hitRate)
 
     }
 
     //----------------------------------------------------------------
-    //Usage : Goes through the list of players and runs them through the fitness tool
+    //Usage : Uses the NeuralNet's mutation tool to cause random mutations
     //Arg   : 
     //Return:
     //----------------------------------------------------------------
@@ -310,13 +305,9 @@ class Player {
     }
 
     //----------------------------------------------------------------
-    //Brainy Stuffs that I kind of understand
-    //----------------------------------------------------------------
-
-    //----------------------------------------------------------------
-    //Usage : Goes through the list of players and runs them through the fitness tool
+    //Usage : creates a duplicate of the NeuralNet brain
     //Arg   : 
-    //Return:
+    //Return: Net brain duplicate
     //----------------------------------------------------------------
     clone() {
         let clone = new Player();
@@ -325,46 +316,44 @@ class Player {
     }
 
     //----------------------------------------------------------------
-    //Usage : Goes through the list of players and runs them through the fitness tool
+    //Usage : Creates a clone of the current ship and seed so the same run can be replayed
     //Arg   : 
     //Return:
     //----------------------------------------------------------------
     cloneForReplay() {
-
-        //Only used if the random seed content ends up being implemented. 
-
+        let clone = new Player();
+        clone.brain = this.brain.clone();
+        return clone;
     }
 
     //----------------------------------------------------------------
-    //Usage : Goes through the list of players and runs them through the fitness tool
+    //Usage : Uses the Net Brain to create a child ship from this ship and a mate
     //Arg   : 
-    //Return:
+    //Return: a Ship who's Net Brain is comprised of a crossover between this and the mate's Net Brains
     //----------------------------------------------------------------
-    crossover(parent2) {
-
+    crossover(mate) {
         let child = new Player();
-        child.brain = brian.crossover(parent2.brain);
+        child.brain = this.brain.crossover(mate.brain);
         return child;
-
     }
 
     //----------------------------------------------------------------
-    //Usage : Goes through the list of players and runs them through the fitness tool
+    //Usage : searches in 8 directions around the ship
     //Arg   : 
     //Return:
     //----------------------------------------------------------------
     look() {
+        this.vision.push(0, 0, 0, 0, 0, 0, 0, 0, 0); //Reset the vision array to all 0s
 
-        this.vision.push(0, 0, 0, 0, 0, 0, 0, 0, 0);
-
-        let direction = Vec2(-1, 0);
+        let direction = Vec2(0, 0); //Look Direction
         for (let i = 0; i < this.vision.length; i++) {
-            direction = Vec2(1, 0);
-            direction.rotate((this.fRotation + i * (Math.PI / 4)));
+            direction = Vec2(1, 0); //Start at Right Vector
+            direction.rotate((this.fRotation + i * (Math.PI / 4))); //Rotate around in 1/8th increments
             direction.mul(10);
-            this.vision[i] = this.lookTowards(direction);
+            this.vision[i] = this.lookTowards(direction); //Use the look towards to search for threats in that zone
         }
 
+        //Prioritise shooting
         if (this.bCanShoot && this.vision[0] != 0) {
             this.vision[8] = 1;
         } else {
@@ -373,27 +362,28 @@ class Player {
     }
 
     //----------------------------------------------------------------
-    //Usage : Goes through the list of players and runs them through the fitness tool
-    //Arg   : 
-    //Return:
+    //Usage : Looks out in a line towards the current direction to look for threats
+    //Arg   : direction vector
+    //Return: returns either 0 for no threat, or a percentage value representing how far away the threat is 
     //----------------------------------------------------------------
     lookTowards(direction) {
 
-        let pos = Vec2(this.vPos.x, this.vPos.y);
+        let pos = Vec2(this.vPos.x, this.vPos.y); //start from the ship
         let distance = 0;
 
-        pos.translate(direction);
-        distance++;
+        pos.translate(direction); //move out by one direction vector distance
+        distance++; //update distance by 1 increment
 
         while (distance < 60) {
             for (let i = 0; i < this.lAsteroids.length; i++) {
                 if (this.lAsteroids[i].lookForHit(pos)) {
-                    return 1 / distance;
+                    return 1 / distance; //if the asteroid is within 60 distances of the ship, return a nonZero. 1/1 represents the closest possible threat
                 }
             }
 
-            pos.translate(direction);
+            pos.translate(direction); //move out by one direction vector distance
 
+            //Account for screen looping            
             if (pos.y < -50) {
                 pos.y = height + 100;
             } else
@@ -407,60 +397,44 @@ class Player {
             }
             distance++;
         }
-
         return 0;
-
     }
-
     //----------------------------------------------------------------
-    //Usage : Goes through the list of players and runs them through the fitness tool
-    //Arg   : 
-    //Return:
-    //----------------------------------------------------------------
-    saveMe() {
-        //File stuff
-    }
-
-    //----------------------------------------------------------------
-    //Usage : Goes through the list of players and runs them through the fitness tool
-    //Arg   : 
-    //Return:
-    //----------------------------------------------------------------
-    loadMe() {
-        //Loading file stuff
-    }
-
-    //----------------------------------------------------------------
-    //Usage : Goes through the list of players and runs them through the fitness tool
+    //Usage : Runs the vision array through the Neural Net to make decisions on actions
     //Arg   : 
     //Return:
     //----------------------------------------------------------------
     think() {
+        this.decision = this.brain.output(this.vision); //create the decision array by running the threat detections through the Network
 
-        this.decision = this.brain.output(this.vision);
+        //If any decision returns a value of 80% or higher (using a matrix that is comprised of -1 or 1 data values) it is performed        
 
-        if (this.decision[0] > 0.8) {
+        if (this.decision[0] > 0.8) { //Line 1 accounts for movement
             this.bBooster = true;
         } else {
             this.bBooster = false;
         }
-        if (this.decision[1] > 0.8) {
+        if (this.decision[1] > 0.8) { //Line 2 accounts for left spinning
             this.fSpin = -0.05;
         } else {
-            if (this.decision[2] > 0.8) {
+            if (this.decision[2] > 0.8) { //Line 3 accounts for right spinning
                 this.fSpin = 0.05;
             } else {
                 this.fSpin = 0;
             }
         }
-
-        if (this.decision[3] > 0.8) {
+        if (this.decision[3] > 0.8) { //Line 4 accounts for shooting
             this.shoot();
         }
+        
+        for(let i = 0; i < this.vision.length; i++)
+            {
+                this.vision.pop();
+            }
     }
 
     //----------------------------------------------------------------
-    //Usage : Goes through the list of players and runs them through the fitness tool
+    //Usage : Draw code for the ship has been moved here to increase readability. 
     //Arg   : 
     //Return:
     //----------------------------------------------------------------
